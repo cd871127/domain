@@ -1,6 +1,7 @@
 package main
 
 import (
+	"config"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -8,9 +9,11 @@ import (
 )
 
 func main() {
+	v, _ := config.LoadConfigFromYaml()
+	fmt.Println(v.GetString("database.user"))
+	//registerIp("localhost", 8888, "aaa")
+	//get()
 
-	registerIp("localhost", 8888, "aaa")
-	get()
 }
 
 //注册ip
@@ -43,3 +46,4 @@ func get() {
 		fmt.Println(string(body))
 	}
 }
+
