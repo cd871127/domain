@@ -1,19 +1,19 @@
 package main
 
 import (
-	"config"
+	"common"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
 )
 
 func main() {
-	v, _ := config.LoadConfigFromYaml()
-	fmt.Println(v.GetString("database.user"))
-	//registerIp("localhost", 8888, "aaa")
-	//get()
-
+	param := url.Values{}
+	param.Add("test", "123")
+	param.Add("test2", "123")
+	common.Get("ip.shit-code.com", "123/123", "50888", param)
 }
 
 //注册ip
@@ -32,9 +32,10 @@ func registerIp(host string, port int, ip string) {
 		}
 		fmt.Println(string(body))
 	}
+
 }
 
-func get() {
+func get1() {
 	client := &http.Client{}
 	resp, _ := client.Get("http://localhost:8888")
 	if resp != nil {
@@ -46,4 +47,3 @@ func get() {
 		fmt.Println(string(body))
 	}
 }
-

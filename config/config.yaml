@@ -3,3 +3,11 @@ server:
   password: 123456
   prefix: 183.
   logFile: server.log
+
+client:
+  namesilo:
+    api-key: 1234567
+  server:
+    port: 8888
+    host: lalala
+    password: 123456
