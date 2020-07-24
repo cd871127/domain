@@ -2,38 +2,22 @@ package common
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
-	"net/url"
 )
 
-var client = &http.Client{}
-
-func Get(host string, path string, port string, param url.Values) string {
-	serverUrl := url.URL{}
-	serverUrl.Path = path
-	serverUrl.Host = host + ":" + port
-	serverUrl.Scheme = "http"
-	if param != nil {
-		serverUrl.RawQuery = param.Encode()
+func Get(request http.Request) ([]byte, error) {
+	//查询dns列表
+	client := &http.Client{}
+	resp, err := client.Do(&request)
+	if resp != nil {
+		defer resp.Body.Close()
 	}
-	log.Printf("%s", serverUrl.String())
-	request, err := http.NewRequest("GET", serverUrl.String(), nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	response, err := client.Do(request)
-
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-	if response != nil {
-		defer response.Body.Close()
-		body, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return string(body)
-	}
-	return ""
+	return body, nil
 }

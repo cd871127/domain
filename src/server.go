@@ -17,6 +17,7 @@ type ServerConfig struct {
 
 var ipAddr = "UNKNOWN"
 var serverConfig ServerConfig
+
 //nohup sudo -u app /app/domain_server /app/config/  > /dev/null 2>&1 &
 func main() {
 	var configPath string
@@ -26,7 +27,7 @@ func main() {
 		configPath = "config/"
 	}
 	log.Println("init server...")
-	serverConfig = loadConfig(configPath)
+	serverConfig = loadServerConfig(configPath)
 	common.InitLogger(serverConfig.logFile)
 
 	http.HandleFunc("/", index)
@@ -58,7 +59,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte(ipAddr))
 }
 
-func loadConfig(configPath string) ServerConfig {
+func loadServerConfig(configPath string) ServerConfig {
 	var serverConfig = ServerConfig{}
 	v, _ := common.Load(configPath)
 	serverConfig.logFile = v.GetString("server.logFile")

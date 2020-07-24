@@ -2,48 +2,76 @@ package main
 
 import (
 	"common"
-	"fmt"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
-	"strconv"
+	"os"
 )
 
+type ClientConfig struct {
+	logFile  string
+	namesilo Namesilo
+	server   Server
+}
+
+type Namesilo struct {
+	apiKey     string
+	targetHost string
+	domain     string
+}
+
+type Server struct {
+	port     string
+	host     string
+	password string
+}
+
+var clientConfig ClientConfig
+
 func main() {
-	param := url.Values{}
-	param.Add("test", "123")
-	param.Add("test2", "123")
-	common.Get("ip.shit-code.com", "123/123", "50888", param)
+	var configPath string
+	if len(os.Args) >= 2 {
+		configPath = os.Args[1]
+	} else {
+		configPath = "config/"
+	}
+	log.Println("init server...")
+	clientConfig = loadClientConfig(configPath)
+	//registerIp(clientConfig.server)
+	common.HandleDns(clientConfig.namesilo.targetHost, clientConfig.namesilo.apiKey, clientConfig.namesilo.domain)
+}
+
+func loadClientConfig(configPath string) ClientConfig {
+	var clientConfig = ClientConfig{}
+	clientConfig.server = Server{}
+	clientConfig.namesilo = Namesilo{}
+
+	v, _ := common.Load(configPath)
+
+	clientConfig.logFile = v.GetString("client.logFile")
+	clientConfig.server.host = v.GetString("client.server.host")
+	clientConfig.server.password = v.GetString("client.server.password")
+	clientConfig.server.port = v.GetString("client.server.port")
+	clientConfig.namesilo.apiKey = v.GetString("client.namesilo.api-key")
+	clientConfig.namesilo.apiKey = v.GetString("client.namesilo.api-key")
+	clientConfig.namesilo.targetHost = v.GetString("client.namesilo.targetHost")
+	clientConfig.namesilo.domain = v.GetString("client.namesilo.domain")
+	log.Println(clientConfig)
+	return clientConfig
 }
 
 //注册ip
-func registerIp(host string, port int, ip string) {
-	passwd := "cd123321"
-	client := &http.Client{}
-
-	fmt.Println("http://" + host + ":" + strconv.Itoa(port) + "/ip?ip=" + ip + "&passwd=" + passwd)
-	//resp, _ := client.Get( host + ":" + string(port) + "/ip?ip=" + ip + "&passwd=" + passwd)
-	resp, _ := client.Get("http://localhost:8888/ip?ip=ffffaf&passwd=1")
-	if resp != nil {
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(string(body))
-	}
-
-}
-
-func get1() {
-	client := &http.Client{}
-	resp, _ := client.Get("http://localhost:8888")
-	if resp != nil {
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(string(body))
-	}
+func registerIp(server Server) {
+	request := http.Request{}
+	requestUrl := url.URL{}
+	request.URL = &requestUrl
+	requestUrl.Scheme = "http"
+	requestUrl.Host = server.host + ":" + server.port
+	requestUrl.Path = "/ip"
+	params := url.Values{}
+	//param.Add("", "123")
+	params.Add("password", server.password)
+	requestUrl.RawQuery = params.Encode()
+	body, _ := common.Get(request)
+	log.Printf("注册IP结果：%s", string(body))
 }
