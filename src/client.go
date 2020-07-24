@@ -35,10 +35,12 @@ func main() {
 	} else {
 		configPath = "config/"
 	}
-	log.Println("init server...")
+	log.Println("init client...")
+
 	clientConfig = loadClientConfig(configPath)
-	//registerIp(clientConfig.server)
-	common.HandleDns(clientConfig.namesilo.targetHost, clientConfig.namesilo.apiKey, clientConfig.namesilo.domain)
+	common.InitLogger(clientConfig.logFile)
+	localIp := common.HandleDns(clientConfig.namesilo.targetHost, clientConfig.namesilo.apiKey, clientConfig.namesilo.domain)
+	registerIp(clientConfig.server, localIp)
 }
 
 func loadClientConfig(configPath string) ClientConfig {
@@ -61,7 +63,7 @@ func loadClientConfig(configPath string) ClientConfig {
 }
 
 //注册ip
-func registerIp(server Server) {
+func registerIp(server Server, localIp string) {
 	request := http.Request{}
 	requestUrl := url.URL{}
 	request.URL = &requestUrl
@@ -71,6 +73,7 @@ func registerIp(server Server) {
 	params := url.Values{}
 	//param.Add("", "123")
 	params.Add("password", server.password)
+	params.Add("ip", localIp)
 	requestUrl.RawQuery = params.Encode()
 	body, _ := common.Get(request)
 	log.Printf("注册IP结果：%s", string(body))

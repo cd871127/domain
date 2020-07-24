@@ -35,7 +35,7 @@ type ResourceRecord struct {
 var key string
 var domain0 string
 
-func HandleDns(targetHost string, apiKey string, domain string) {
+func HandleDns(targetHost string, apiKey string, domain string) string {
 	key = apiKey
 	domain0 = domain
 	update, id, localIp := queryDnsRecordIdAndLocalIp(targetHost + "." + domain0)
@@ -47,6 +47,7 @@ func HandleDns(targetHost string, apiKey string, domain string) {
 			updateDnsRecord(id, localIp, targetHost)
 		}
 	}
+	return localIp
 }
 
 func queryDnsRecordIdAndLocalIp(targetHost string) (bool, string, string) {
