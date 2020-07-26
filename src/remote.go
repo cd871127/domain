@@ -26,7 +26,7 @@ func main() {
 }
 
 func start(w http.ResponseWriter, r *http.Request) {
-	command := exec.Command("wakeonlan", "-i", "192.168.2.0 d0:50:99:70:87:3f")
+	command := exec.Command("wakeonlan -i 192.168.2.0 d0:50:99:70:87:3f")
 	outinfo := bytes.Buffer{}
 	command.Stdout = &outinfo
 	err := command.Start()
