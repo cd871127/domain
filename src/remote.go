@@ -24,8 +24,7 @@ func main() {
 }
 
 func start(w http.ResponseWriter, r *http.Request) {
-	//cmd := exec.Command("wakeonlan", "-i", "192.168.2.0 d0:50:99:70:87:3f")
-	cmd := exec.Command("ls", "-l", "/")
+	cmd := exec.Command("wakeonlan", "-i", "192.168.2.0 d0:50:99:70:87:3f")
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("Execute Command failed:" + err.Error())
