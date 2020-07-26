@@ -37,7 +37,7 @@ func start(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err.Error())
 	} else {
 		fmt.Println(command.ProcessState.Pid())
-		fmt.Println(command.ProcessState.Sys().(syscall.WaitStatus).ExitCode)
+		fmt.Println(command.ProcessState.Sys().(syscall.WaitStatus).ExitStatus())
 		fmt.Println(outinfo.String())
 	}
 }
