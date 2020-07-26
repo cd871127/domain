@@ -35,6 +35,7 @@ func main() {
 	} else {
 		configPath = "config/"
 	}
+	log.Printf("log path:%s", configPath)
 	log.Println("init client...")
 
 	clientConfig = loadClientConfig(configPath)
