@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"net/http"
 	"os/exec"
+	"syscall"
 )
 
 func main() {
@@ -24,11 +26,18 @@ func main() {
 }
 
 func start(w http.ResponseWriter, r *http.Request) {
-	cmd := exec.Command("wakeonlan", "-i", "192.168.2.0 d0:50:99:70:87:3f")
-	err := cmd.Run()
+	command := exec.Command("wakeonlan", "-i", "192.168.2.0 d0:50:99:70:87:3f")
+	outinfo := bytes.Buffer{}
+	command.Stdout = &outinfo
+	err := command.Start()
 	if err != nil {
-		fmt.Println("Execute Command failed:" + err.Error())
-		return
+		fmt.Println(err.Error())
 	}
-	fmt.Println("Execute Command finished.")
+	if err = command.Wait(); err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println(command.ProcessState.Pid())
+		fmt.Println(command.ProcessState.Sys().(syscall.WaitStatus).ExitCode)
+		fmt.Println(outinfo.String())
+	}
 }
