@@ -5,9 +5,12 @@ server:
   logFile: server.log
 
 client:
+  logFile: client.log
   namesilo:
-    api-key: 1234567
+    api-key: 8d58a6f8ca27b0bb1cd482fd7
+    targetHost: cloud
+    domain: shit-code.com
   server:
-    port: 8888
-    host: lalala
-    password: 123456
+    port: 50888
+    host: ip.shit-code.com
+    password: 202007182319Cd*
