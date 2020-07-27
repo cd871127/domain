@@ -1,7 +1,7 @@
 package main
 
 import (
-	"common"
+	"domain/common"
 	"log"
 	"net/http"
 	"os"
@@ -9,10 +9,13 @@ import (
 )
 
 type ServerConfig struct {
-	port     string
-	logFile  string
-	password string
-	prefix   string
+	Port     string
+	LogFile  string
+	Password string
+	Prefix   string
+}
+type config struct {
+	Server ServerConfig `mapstructure:"server"`
 }
 
 var ipAddr = "UNKNOWN"
@@ -28,22 +31,22 @@ func main() {
 	}
 	log.Println("init server...")
 	serverConfig = loadServerConfig(configPath)
-	common.InitLogger(serverConfig.logFile)
+	common.InitLogger(serverConfig.LogFile)
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/ip", ip)
 	log.Println("start server...")
-	log.Fatal(http.ListenAndServe(":"+serverConfig.port, nil))
+	log.Fatal(http.ListenAndServe(":"+serverConfig.Port, nil))
 }
 
 func ip(w http.ResponseWriter, r *http.Request) {
 	log.Println(r)
 	remoteAddr := r.RemoteAddr
-	if !strings.Contains(remoteAddr, serverConfig.prefix) {
+	if !strings.Contains(remoteAddr, serverConfig.Prefix) {
 		log.Println("未知ip：" + remoteAddr)
 	}
 	password := r.URL.Query().Get("password")
-	if password == serverConfig.password {
+	if password == serverConfig.Password {
 		ipAddr = r.URL.Query().Get("ip")
 		if ipAddr == "" {
 			ipAddr = remoteAddr
@@ -60,12 +63,9 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func loadServerConfig(configPath string) ServerConfig {
-	var serverConfig = ServerConfig{}
+	var config = config{}
 	v, _ := common.Load(configPath)
-	serverConfig.logFile = v.GetString("server.logFile")
-	serverConfig.prefix = v.GetString("server.prefix")
-	serverConfig.password = v.GetString("server.password")
-	serverConfig.port = v.GetString("server.port")
-	log.Println(serverConfig)
-	return serverConfig
+	v.Unmarshal(&config)
+	log.Println(config)
+	return config.Server
 }

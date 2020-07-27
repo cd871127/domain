@@ -8,9 +8,7 @@ func Load(configPath string) (*viper.Viper, error) {
 	v.AddConfigPath(configPath)
 	v.SetConfigType("yaml")
 	if err := v.ReadInConfig(); err != nil {
-
 		return nil, err
-
 	}
 	return v, nil
 }
