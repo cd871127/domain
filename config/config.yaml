@@ -14,3 +14,10 @@ client:
     port: 50888
     host: ip.shit-code.com
     password: 202007182319Cd*
+
+remote:
+  logFile: remote.log
+  port: 8888
+  client:
+    ip: 192.168.2.0
+    mac: d0:50:99:70:87:3f
