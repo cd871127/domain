@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"domain/common"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -42,6 +41,7 @@ func main() {
 }
 
 func start(w http.ResponseWriter, r *http.Request) {
+	log.Println(r)
 	cmd := "wakeonlan -i " + remoteControlConfig.Client.Ip + " " + remoteControlConfig.Client.Mac
 
 	command := exec.Command("/bin/sh", "-c", cmd)
@@ -49,14 +49,14 @@ func start(w http.ResponseWriter, r *http.Request) {
 	command.Stdout = &outinfo
 	err := command.Start()
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 	if err = command.Wait(); err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	} else {
-		fmt.Println(command.ProcessState.Pid())
-		fmt.Println(command.ProcessState.Sys().(syscall.WaitStatus).ExitStatus())
-		fmt.Println(outinfo.String())
+		log.Println(command.ProcessState.Pid())
+		log.Println(command.ProcessState.Sys().(syscall.WaitStatus).ExitStatus())
+		log.Println(outinfo.String())
 	}
 }
 
