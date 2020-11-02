@@ -50,14 +50,17 @@ func start(w http.ResponseWriter, r *http.Request) {
 	err := command.Start()
 	if err != nil {
 		log.Println(err.Error())
+		_, _ = w.Write([]byte("Error"))
 	}
 	if err = command.Wait(); err != nil {
 		log.Println(err.Error())
+		_, _ = w.Write([]byte("Error"))
 	} else {
 		log.Println(command.ProcessState.Pid())
 		log.Println(command.ProcessState.Sys().(syscall.WaitStatus).ExitStatus())
 		log.Println(outinfo.String())
 	}
+    _, _ = w.Write([]byte("Success"))
 }
 
 func loadRemoteConfig(configPath string) RemoteControlConfig {
